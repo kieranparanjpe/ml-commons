@@ -43,6 +43,10 @@ class Logger(ABC):
     def log_data(self, *fields):
         pass
 
+    @abstractmethod
+    def set_prefix(self, prefix, *fields):
+        pass
+
 
 class WandBLogger(Logger):
     def __init__(self, run_info: RunInfo, entity: str, project: str,
@@ -60,6 +64,7 @@ class WandBLogger(Logger):
 
         self._elements_start = elements
         self._elements = deepcopy(self._elements_start)
+        self._elements_prefix = {}
 
         self._run.define_metric("*", step_metric=default_x_axis)
 
@@ -89,11 +94,17 @@ class WandBLogger(Logger):
             self._elements[k] += v
 
     def log_data(self, *fields):
+        prefixed_elements = {f"{self._elements_prefix.get(k, "")}{k}": v for k, v in self._elements.items()}
+
         if fields is None or len(fields) == 0:
-            self._run.log(data=self._elements)
+            self._run.log(data=prefixed_elements)
         else:
-            data = {k: v for k, v in self._elements.items() if k in fields}
+            data = {k: v for k, v in prefixed_elements.items() if k in fields}
             self._run.log(data=data)
+
+    def set_prefix(self, elements : Dict[str, str]):
+        for k, v in elements.items():
+            self._elements_prefix[k] = v
 
 
 class NullLogger(Logger):
@@ -117,4 +128,7 @@ class NullLogger(Logger):
         pass
 
     def set_element_step_metric(self, elements: Dict[str, str]):
+        pass
+
+    def set_prefix(self, prefix, *fields):
         pass
