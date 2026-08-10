@@ -24,6 +24,10 @@ class Logger(ABC):
         pass
 
     @abstractmethod
+    def set_element_step_metric(self, elements: Dict[str, str]):
+        pass
+
+    @abstractmethod
     def reset(self, *fields: str):
         pass
 
@@ -42,7 +46,7 @@ class Logger(ABC):
 
 class WandBLogger(Logger):
     def __init__(self, run_info: RunInfo, entity: str, project: str,
-                 hyperparameters: Dict[str, Any], elements: Dict[str, Any]):
+                 hyperparameters: Dict[str, Any], elements: Dict[str, Any], default_x_axis="global_step"):
         super().__init__()
         self._run = self._wandb_run = wandb.init(
             entity=entity,
@@ -57,7 +61,7 @@ class WandBLogger(Logger):
         self._elements_start = elements
         self._elements = deepcopy(self._elements_start)
 
-        self._run.define_metric("*", step_metric="global_step")
+        self._run.define_metric("*", step_metric=default_x_axis)
 
     def finish(self):
         self._run.finish()
@@ -65,6 +69,10 @@ class WandBLogger(Logger):
     def add_elements(self, elements: Dict[str, Any]):
         self._elements.update(deepcopy(elements))
         self._elements_start.update(elements)
+
+    def set_element_step_metric(self, elements: Dict[str, str]):
+        for field in elements.keys():
+            self._run.define_metric(field, step_metric=elements[field])
 
     def reset(self, *fields: str):
         if fields is None or len(fields) == 0:
@@ -106,4 +114,7 @@ class NullLogger(Logger):
         pass
 
     def log_data(self, *fields):
+        pass
+
+    def set_element_step_metric(self, elements: Dict[str, str]):
         pass
