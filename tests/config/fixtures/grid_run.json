@@ -1,0 +1,10 @@
+{
+  "algorithm": {
+    "n_timesteps": [50000],
+    "lr": [0.001, 0.0003]
+  },
+  "policy": {
+    "hidden_sizes": [[32, 32]],
+    "activation": ["relu", "tanh"]
+  }
+}
