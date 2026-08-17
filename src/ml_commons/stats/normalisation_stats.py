@@ -22,5 +22,6 @@ class NormalisationStats:
 
 torch.serialization.add_safe_globals([
     NormalisationStats,
-    np._core.multiarray._reconstruct, np.ndarray, np.dtype, np.dtypes.Float64DType,
+    np._core.multiarray._reconstruct, np.ndarray, np.dtype,
+    np.dtypes.Float32DType, np.dtypes.Float64DType,
 ])
