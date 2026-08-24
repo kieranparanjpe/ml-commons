@@ -47,6 +47,10 @@ class Logger(ABC):
     def set_prefix(self, prefix, *fields):
         pass
 
+    @abstractmethod
+    def add_tags(self, *tags):
+        pass
+
 
 class WandBLogger(Logger):
     def __init__(self, run_info: RunInfo, entity: str, project: str,
@@ -106,6 +110,9 @@ class WandBLogger(Logger):
         for k, v in elements.items():
             self._elements_prefix[k] = v
 
+    def add_tags(self, *tags):
+        self._run.tags = (*self._run.tags, *tags)
+
 
 class NullLogger(Logger):
 
@@ -131,4 +138,7 @@ class NullLogger(Logger):
         pass
 
     def set_prefix(self, prefix, *fields):
+        pass
+
+    def add_tags(self, *tags):
         pass
