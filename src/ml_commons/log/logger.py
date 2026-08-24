@@ -51,6 +51,9 @@ class Logger(ABC):
     def add_tags(self, *tags):
         pass
 
+    @abstractmethod
+    def update_config(self, kvps):
+        pass
 
 class WandBLogger(Logger):
     def __init__(self, run_info: RunInfo, entity: str, project: str,
@@ -113,6 +116,9 @@ class WandBLogger(Logger):
     def add_tags(self, *tags):
         self._run.tags = (*self._run.tags, *tags)
 
+    def update_config(self, kvps):
+        self._run.config.update(kvps, True)
+
 
 class NullLogger(Logger):
 
@@ -141,4 +147,7 @@ class NullLogger(Logger):
         pass
 
     def add_tags(self, *tags):
+        pass
+
+    def update_config(self, kvps):
         pass
