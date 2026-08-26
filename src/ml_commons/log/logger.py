@@ -20,6 +20,10 @@ class Logger(ABC):
         pass
 
     @abstractmethod
+    def keys(self) -> list[str]:
+        pass
+
+    @abstractmethod
     def add_elements(self, elements: Dict[str, Any]):
         pass
 
@@ -78,6 +82,9 @@ class WandBLogger(Logger):
     def finish(self):
         self._run.finish()
 
+    def keys(self) -> list[str]:
+        return list(self._elements.keys())
+
     def add_elements(self, elements: Dict[str, Any]):
         self._elements.update(deepcopy(elements))
         self._elements_start.update(elements)
@@ -124,6 +131,9 @@ class NullLogger(Logger):
 
     def finish(self):
         pass
+
+    def keys(self) -> list[str]:
+        return []
 
     def add_elements(self, elements: Dict[str, Any]):
         pass
