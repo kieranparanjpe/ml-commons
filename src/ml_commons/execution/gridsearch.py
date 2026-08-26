@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, wait, FIRST_COMPLETED
 from typing import Any, Callable
 
@@ -16,7 +17,8 @@ def gridsearch(run_one: Callable[[Any, int], Any], configs: list, max_parallel: 
     n_parallel = min(os.cpu_count() or 1, 8) if max_parallel is None else max_parallel
     config_index = 0
 
-    with ProcessPoolExecutor(max_workers=n_parallel) as pool:
+    ctx = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=n_parallel, mp_context=ctx) as pool:
         in_flight = set()
 
         for _ in range(min(n_parallel, len(configs))):
