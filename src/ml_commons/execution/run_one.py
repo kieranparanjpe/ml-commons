@@ -19,8 +19,11 @@ def run_one(run_config: Any, index: int | None, *,
         index: Grid index if part of a grid search, else None.
         trainer_factory: Callable(run_config, index) -> BaseTrainer.
     """
-    torch.set_num_threads(1)
-    torch.set_num_interop_threads(1)
+    try:
+        torch.set_num_threads(1)
+        torch.set_num_interop_threads(1)
+    except RuntimeError:
+        pass
 
     trainer_factory(run_config, index).run()
     return True
